@@ -11,9 +11,10 @@ public class WindowFriend extends JFrame {
     private static final long serialVersionUID = 2260302611156696094L;
     private JPanel panel;
     private String id;
-    private JLabel imgLabel;
-    int x;
-    int y;
+    private int x;
+    private int y;
+    private int imageWidth;
+    private int imageHeight;
 
     /**
      * Launch the application.
@@ -21,9 +22,7 @@ public class WindowFriend extends JFrame {
      * @throws InterruptedException
      */
     public static void main(String[] args) throws IOException, InterruptedException {
-
-        WindowFriend frame = new WindowFriend();
-
+        new WindowFriend();
     }
     /**
      * Create the frame.
@@ -39,8 +38,11 @@ public class WindowFriend extends JFrame {
         this.setAlwaysOnTop(true);
 
         this.setImage();
-//        imgLabel = new JLabel(new ImageIcon("/home/cosc/student/dhl25/Pictures/pika.gif"));
-//        this.setSize(400, 285);
+//        JLabel imgLabel = new JLabel(new ImageIcon("/home/user/Pictures/pika.gif"));
+//        JLabel imgLabel = new JLabel(new ImageIcon("/home/cosc/student/dhl25/Pictures/pika.gif"));
+//        imageWidth = 400;
+//        imageHeight = 285;
+//        this.setSize(imageWidth, imageHeight);
 //        this.getContentPane().add(imgLabel);
 
         this.setID();
@@ -49,7 +51,7 @@ public class WindowFriend extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getButton() == MouseEvent.BUTTON2){
-                    //this.openMenu();
+                    //openMenu();
                 }else if (e.getClickCount() == 1) {
                     updateLocation();
                 }else if (e.getClickCount() == 2) {
@@ -67,24 +69,22 @@ public class WindowFriend extends JFrame {
     private void follow(){
         int xOld = x;
         int yOld = y;
-        int xNew = x;
-        int yNew = y;
-        BufferedReader br;
+        BufferedReader br = null;
         Process xwininfoID;
         String currentLine;
         try {
-            while (xOld == xNew && yOld == yNew) {
-                xOld = xNew;
-                yOld = yNew;
+            while (xOld == x && yOld == y) {
+                xOld = x;
+                yOld = y;
                 xwininfoID = Runtime.getRuntime().exec("xwininfo -id " + id);
                 br = new BufferedReader(new InputStreamReader(xwininfoID.getInputStream()));
                 currentLine = br.readLine();
                 while (!currentLine.contains("Absolute upper-left X")) {
                     currentLine = br.readLine();
                 }
-                xNew = Integer.parseInt(currentLine.split(":")[1].trim());
+                x = Integer.parseInt(currentLine.split(":")[1].trim());
                 currentLine = br.readLine();
-                yNew = Integer.parseInt(currentLine.split(":")[1].trim());
+                y = Integer.parseInt(currentLine.split(":")[1].trim());
                 try {
                     Thread.sleep(20);
                 } catch (InterruptedException e) {
@@ -92,27 +92,43 @@ public class WindowFriend extends JFrame {
                     e.printStackTrace();
                 }
             }
+            if(br == null){
+                System.err.println("Something went wrong in follow probably something to do with br");
+                System.exit(2);
+            }
+            br.readLine();
+            br.readLine();
+            currentLine = br.readLine();
+            int windowWidth = Integer.parseInt(currentLine.split(":")[1].trim());
+            currentLine = br.readLine();
+            int windowHeight = Integer.parseInt(currentLine.split(":")[1].trim());
+            this.setLocation(x + windowWidth - imageWidth, y + windowHeight - imageHeight);
+            this.validate();
+            this.getContentPane().validate();
         } catch (NullPointerException e1) {
-            //e.printStackTrace();
+            //e1.printStackTrace();
             System.exit(0);
         } catch (IOException e2) {
             System.err.println("Problem with follow; IOException LMAO");
             e2.printStackTrace();
+            System.exit(1);
         }
-        this.setLocation(xNew, yNew);
-        this.validate();
-        this.getContentPane().validate();
+
         follow();
     }
 
     private void setImage() throws IOException{
-        JFileChooser fileChooser = new JFileChooser("/home/cosc/student/dhl25/Pictures");
+        JFileChooser fileChooser = new JFileChooser();
+        //JFileChooser fileChooser = new JFileChooser("/home/cosc/student/dhl25/Pictures");
         int userChoice = fileChooser.showOpenDialog(this);
         if(userChoice == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
-            Image image =  ImageIO.read(file);
-            panel.add(new JLabel(new ImageIcon(image)));
-            this.getContentPane().add(new JLabel(new ImageIcon(image)));
+            //Image image = Toolkit.getDefaultToolkit().createImage(org.apache.commons.io.IOUtils.toByteArray(in));
+            ImageIcon image = new ImageIcon(ImageIO.read(file));
+            imageWidth = image.getIconWidth();
+            imageHeight = image.getIconHeight();
+            panel.add(new JLabel(image));
+            this.getContentPane().add(new JLabel(image));
             Process fileInfo = Runtime.getRuntime().exec("file " + file.getPath());
             BufferedReader br = new BufferedReader(new InputStreamReader(fileInfo.getInputStream()));
             String[] dimensions = br.readLine().split(",")[2].split("x");
@@ -136,6 +152,7 @@ public class WindowFriend extends JFrame {
         } catch (IOException e){
             System.err.println("Trouble Setting ID xD");
             e.printStackTrace();
+            System.exit(3);
         }
     }
 
@@ -145,22 +162,33 @@ public class WindowFriend extends JFrame {
             BufferedReader br = new BufferedReader(new InputStreamReader(xwininfoID.getInputStream()));
             String currentLine = br.readLine();
             while(!currentLine.contains("Absolute upper-left X")){
-                currentLine = br.readLine();}
+                currentLine = br.readLine();
+            }
             x = Integer.parseInt(currentLine.split(":")[1].trim());
             currentLine = br.readLine();
             y = Integer.parseInt(currentLine.split(":")[1].trim());
-            this.setLocation(x, y);
+            br.readLine();
+            br.readLine();
+            currentLine = br.readLine();
+            int windowWidth = Integer.parseInt(currentLine.split(":")[1].trim());
+            currentLine = br.readLine();
+            int windowHeight = Integer.parseInt(currentLine.split(":")[1].trim());
+            this.setLocation(x + windowWidth - imageWidth, y + windowHeight - imageHeight);
             this.validate();
             this.getContentPane().validate();
         } catch (IOException e) {
             System.err.println("Trouble Updating Location LOL");
             e.printStackTrace();
+            System.exit(4);
         }
     }
 
     private void openMenu(){
+        JWindow menu = new JWindow();
+        menu.setVisible(true);
 
     }
+
 
 
 }
