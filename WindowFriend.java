@@ -113,7 +113,6 @@ public class WindowFriend extends JFrame {
             e2.printStackTrace();
             System.exit(1);
         }
-
         follow();
     }
 
@@ -129,14 +128,16 @@ public class WindowFriend extends JFrame {
             imageHeight = image.getIconHeight();
             panel.add(new JLabel(image));
             this.getContentPane().add(new JLabel(image));
-            Process fileInfo = Runtime.getRuntime().exec("file " + file.getPath());
-            BufferedReader br = new BufferedReader(new InputStreamReader(fileInfo.getInputStream()));
-            String[] dimensions = br.readLine().split(",")[2].split("x");
-            int x = Integer.parseInt(dimensions[0].trim());
-            int y = Integer.parseInt(dimensions[1].trim());
-            this.setSize(x, y);
+//            Process fileInfo = Runtime.getRuntime().exec("file " + file.getPath());
+//            BufferedReader br = new BufferedReader(new InputStreamReader(fileInfo.getInputStream()));
+//            String[] dimensions = br.readLine().split(",")[2].split("x");
+//            int x = Integer.parseInt(dimensions[0].trim());
+//            int y = Integer.parseInt(dimensions[1].trim());
+            this.setSize(imageWidth, imageHeight);
             this.validate();
             this.getContentPane().validate();
+        } else {
+            System.exit(0);
         }
     }
 
@@ -183,11 +184,11 @@ public class WindowFriend extends JFrame {
         }
     }
 
-    private void openMenu(){
-        JWindow menu = new JWindow();
-        menu.setVisible(true);
-
-    }
+//    private void openMenu(){
+//        JWindow menu = new JWindow();
+//        menu.setVisible(true);
+//
+//    }
 
 
 
