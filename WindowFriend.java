@@ -125,7 +125,7 @@ public class WindowFriend extends JFrame {
         if(userChoice == JFileChooser.APPROVE_OPTION) {
             File file = fileChooser.getSelectedFile();
             //Image image = Toolkit.getDefaultToolkit().createImage(org.apache.commons.io.IOUtils.toByteArray(in));
-            ImageIcon image = new ImageIcon(ImageIO.read(file));
+            ImageIcon image = new ImageIcon(file.getPath());
 
             imageWidth = image.getIconWidth();
             imageHeight = image.getIconHeight();
