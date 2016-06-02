@@ -15,6 +15,7 @@ public class WindowFriend extends JFrame {
     private int y;
     private int imageWidth;
     private int imageHeight;
+    private Boolean onTop;
 
     /**
      * Launch the application.
@@ -46,14 +47,15 @@ public class WindowFriend extends JFrame {
 //        this.getContentPane().add(imgLabel);
 
         this.setID();
-
+        this.onTop = true;
         this.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if(e.getButton() == MouseEvent.BUTTON2){
                     //openMenu();
                 }else if (e.getClickCount() == 1) {
-                    updateLocation();
+                    onTop = !onTop;
+                    setAlwaysOnTop(onTop);
                 }else if (e.getClickCount() == 2) {
                     System.exit(0);
                 }
@@ -93,7 +95,7 @@ public class WindowFriend extends JFrame {
                 }
             }
             if(br == null){
-                System.err.println("Something went wrong in follow probably something to do with br");
+                System.err.println("Something went wrong in follow probably something to do with br reKT");
                 System.exit(2);
             }
             br.readLine();
@@ -124,15 +126,11 @@ public class WindowFriend extends JFrame {
             File file = fileChooser.getSelectedFile();
             //Image image = Toolkit.getDefaultToolkit().createImage(org.apache.commons.io.IOUtils.toByteArray(in));
             ImageIcon image = new ImageIcon(ImageIO.read(file));
+
             imageWidth = image.getIconWidth();
             imageHeight = image.getIconHeight();
             panel.add(new JLabel(image));
             this.getContentPane().add(new JLabel(image));
-//            Process fileInfo = Runtime.getRuntime().exec("file " + file.getPath());
-//            BufferedReader br = new BufferedReader(new InputStreamReader(fileInfo.getInputStream()));
-//            String[] dimensions = br.readLine().split(",")[2].split("x");
-//            int x = Integer.parseInt(dimensions[0].trim());
-//            int y = Integer.parseInt(dimensions[1].trim());
             this.setSize(imageWidth, imageHeight);
             this.validate();
             this.getContentPane().validate();
